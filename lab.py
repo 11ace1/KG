@@ -11,7 +11,7 @@ class BMP_Image:
         self.icon = PhotoImage(file="ic.png")
         editor.iconphoto(False, self.icon)
         editor.title("BMP editor")
-        self.image_label = tk.Label(self.editor)
+        self.image_label = tk.Label(self.editor, bg='gray', width=500, height=500)
         self.image_label.pack(expand=True)
         
         self.menu_bar = Menu(self.editor)
