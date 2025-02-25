@@ -9,8 +9,11 @@ class BMP_Image:
         self.editor = editor
         editor.geometry("500x500")
         self.icon = PhotoImage(file="ic.png")
-        editor.iconphoto(False, self.icon)
-        editor.title("BMP editor")
+        try:
+            editor.iconphoto(False, self.icon)
+            editor.title("BMP editor")
+        except Exception as e:
+            print(f"Ошибка загрузки {e}")
         self.image_label = tk.Label(self.editor, bg='gray', width=500, height=500)
         self.image_label.pack(expand=True)
         
@@ -42,10 +45,13 @@ class BMP_Image:
     def open_image(self):
         file_p = filedialog.askopenfilename(filetypes=[("BMP Files", "*.bmp")])
         if file_p:
-            self.original_image = Image.open(file_p)
-            self.set_scale("100%")
-            for i in range(len(self.scales)):
-                self.scale_menu.entryconfig(i, state="normal")
+            try:
+                self.original_image = Image.open(file_p)
+                self.set_scale("100%")
+                for i in range(len(self.scales)):
+                    self.scale_menu.entryconfig(i, state="normal")
+            except Exception as e:
+                print(f"Ошибка при загрузке фотографии {e}")
     def clear_image(self):
         self.original_image = None
         self.image_label.config(image="")
