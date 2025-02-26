@@ -3,7 +3,7 @@ from tkinter import filedialog, Menu, messagebox, PhotoImage
 from PIL import Image, ImageTk
 
 window =tk.Tk()
-
+# основной класс фоторедактора
 class BMP_Image:
     def __init__(self, editor : tk.Tk):
         self.cached_images={}
@@ -19,9 +19,10 @@ class BMP_Image:
         self.image_label = tk.Label(self.editor)
         self.image_label.pack(expand=True)
         
+        # создание меню File
         self.menu_bar = Menu(self.editor)
         self.editor.config(menu=self.menu_bar)
-        
+        # создание пунктов подменю по открытию, очистке окна и выходу из программы
         self.file_menu = Menu(self.menu_bar)
         self.file_menu.add_command(label="Открыть", command=self.open_image)
         self.file_menu.add_command(label="Очистить", command=self.clear_image)
@@ -35,7 +36,7 @@ class BMP_Image:
         self.scale_menu = Menu(self.menu_bar)
         self.scales = {"50%" : 0.5, "100%": 1.0, "150" : 1.5, "200%" : 2.0}
         self.scale_vars = {}
-        
+        # создание пунктов подменю Scale
         for label, f in self.scales.items():
             self.scale_vars[label] = tk.BooleanVar()
             self.scale_menu.add_radiobutton(label=label, variable=self.scale_vars[label], command=lambda l=label: self.set_scale(l), state="disabled", activebackground='blue' )
@@ -44,6 +45,7 @@ class BMP_Image:
         
         self.original_image = None
         self.current_scale = "100%"  
+    # Открытие изображение
     def open_image(self):
         file_p = filedialog.askopenfilename(filetypes=[("BMP Files", "*.bmp")])
         if file_p:
@@ -54,12 +56,13 @@ class BMP_Image:
                     self.scale_menu.entryconfig(i, state="normal")
             except Exception as e:
                 messagebox.showinfo("Ошибка", f"Ошибка при загрузке фотографии {e}")
+    # Очистка окна
     def clear_image(self):
         self.original_image = None
         self.image_label.config(image="")
         for i in range(len(self.scales)):
             self.scale_menu.entryconfig(i, state="disabled" )
-    
+    # Масшабирование 
     def set_scale(self, scale):
         if not self.original_image:
             return
