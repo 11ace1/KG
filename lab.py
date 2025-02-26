@@ -7,36 +7,37 @@ window =tk.Tk()
 class BMP_Image:
     def __init__(self, editor : tk.Tk):
         self.editor = editor
+        self.editor.option_add("*tearOff", False)
         editor.geometry("500x500")
         self.icon = PhotoImage(file="ic.png")
         try:
             editor.iconphoto(False, self.icon)
             editor.title("BMP editor")
         except Exception as e:
-            print(f"Ошибка загрузки {e}")
-        self.image_label = tk.Label(self.editor, bg='gray', width=500, height=500)
+            messagebox.showinfo(f"Ошибка загрузки {e}")
+        self.image_label = tk.Label(self.editor)
         self.image_label.pack(expand=True)
         
         self.menu_bar = Menu(self.editor)
         self.editor.config(menu=self.menu_bar)
         
-        self.file_menu = Menu(self.menu_bar, tearoff=0)
+        self.file_menu = Menu(self.menu_bar)
         self.file_menu.add_command(label="Открыть", command=self.open_image)
         self.file_menu.add_command(label="Очистить", command=self.clear_image)
-        
+
         self.file_menu.add_separator()
         
         self.file_menu.add_command(label="Выход", command=self.editor.quit)
         
         self.menu_bar.add_cascade(label="File",menu=self.file_menu)
         
-        self.scale_menu = Menu(self.menu_bar, tearoff=0)
+        self.scale_menu = Menu(self.menu_bar)
         self.scales = {"50%" : 0.5, "100%": 1.0, "150" : 1.5, "200%" : 2.0}
         self.scale_vars = {}
         
         for label, f in self.scales.items():
             self.scale_vars[label] = tk.BooleanVar()
-            self.scale_menu.add_radiobutton(label=label, variable=self.scale_vars[label], command=lambda l=label: self.set_scale(l), state="disabled" )
+            self.scale_menu.add_radiobutton(label=label, variable=self.scale_vars[label], command=lambda l=label: self.set_scale(l), state="disabled", activebackground='blue' )
         
         self.menu_bar.add_cascade(label="Scale", menu=self.scale_menu) 
         
@@ -51,12 +52,12 @@ class BMP_Image:
                 for i in range(len(self.scales)):
                     self.scale_menu.entryconfig(i, state="normal")
             except Exception as e:
-                print(f"Ошибка при загрузке фотографии {e}")
+                messagebox.showinfo(f"Ошибка при загрузке фотографии {e}")
     def clear_image(self):
         self.original_image = None
         self.image_label.config(image="")
         for i in range(len(self.scales)):
-            self.scale_menu.entryconfig(i, state="disabled")
+            self.scale_menu.entryconfig(i, state="disabled" )
     
     def set_scale(self, scale):
         if not self.original_image:
