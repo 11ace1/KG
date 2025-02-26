@@ -6,6 +6,7 @@ window =tk.Tk()
 
 class BMP_Image:
     def __init__(self, editor : tk.Tk):
+        self.cached_images={}
         self.editor = editor
         self.editor.option_add("*tearOff", False)
         editor.geometry("500x500")
@@ -14,7 +15,7 @@ class BMP_Image:
             editor.iconphoto(False, self.icon)
             editor.title("BMP editor")
         except Exception as e:
-            messagebox.showinfo(f"Ошибка загрузки {e}")
+            messagebox.showinfo("Ошибка", f"Ошибка загрузки {e}")
         self.image_label = tk.Label(self.editor)
         self.image_label.pack(expand=True)
         
@@ -52,7 +53,7 @@ class BMP_Image:
                 for i in range(len(self.scales)):
                     self.scale_menu.entryconfig(i, state="normal")
             except Exception as e:
-                messagebox.showinfo(f"Ошибка при загрузке фотографии {e}")
+                messagebox.showinfo("Ошибка", f"Ошибка при загрузке фотографии {e}")
     def clear_image(self):
         self.original_image = None
         self.image_label.config(image="")
@@ -65,17 +66,25 @@ class BMP_Image:
         
         for key in self.scale_vars:
             self.scale_vars[key].set(False)
-        
         self.scale_vars[scale].set(True)
-        self.current_scale = scale
         
-        scale_fact = self.scales[scale]
-        nw_size = (int(self.original_image.width * scale_fact), int(self.original_image.height * scale_fact))
+        if scale in self.cached_images:
+            self.display_image = self.cached_images[scale]
+        else:
+            scale_fact = self.scales[scale]
+            nw_size = (int(self.original_image.width * scale_fact), int(self.original_image.height * scale_fact))
+            resiz_image = self.original_image.resize(nw_size, Image.Resampling.LANCZOS)
+            self.display_image = ImageTk.PhotoImage(resiz_image)
+            self.cached_images[scale] = self.display_image
         
-        resiz_image = self.original_image.resize(nw_size, Image.Resampling.LANCZOS)
-        self.display_image = ImageTk.PhotoImage(resiz_image)
         self.image_label.config(image=self.display_image)
-        self.editor.geometry(f"{nw_size[0]}x{nw_size[1]}")
+        
+        for i, (label, _) in enumerate(self.scales.items()):
+            self.scale_menu.entryconfig(i, state='normal')
+            if label == scale:
+                self.scale_menu.entryconfig(i,state="disabled")
+        
+        self.editor.geometry(f"{self.display_image.width()}x{self.display_image.height()}")
 
         
        
