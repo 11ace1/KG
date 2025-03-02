@@ -52,6 +52,7 @@ class BMP_Image:
             try:
                 self.original_image = Image.open(file_p)
                 self.set_scale("100%")
+                self.cached_images.clear()
                 for i in range(len(self.scales)):
                     self.scale_menu.entryconfig(i, state="normal")
             except Exception as e:
@@ -60,6 +61,7 @@ class BMP_Image:
     def clear_image(self):
         self.original_image = None
         self.image_label.config(image="")
+        self.cached_images.clear()
         for i in range(len(self.scales)):
             self.scale_menu.entryconfig(i, state="disabled" )
     # Масшабирование 
